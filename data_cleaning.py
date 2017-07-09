@@ -8,7 +8,7 @@ import scipy as sp
 
 # os.chdir('/Users/Eric/FF_IndustryFactorExposure')
 
-start_date= '1986-12-31'
+start_date= '1987-12-31'
 end_date= '2017-03-31'
 df_dic= {}
 

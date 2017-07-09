@@ -1,4 +1,6 @@
-
+import statsmodels.api as sm
+import numpy as np
+import pandas as pd
 
 
 def rolling_reg( X, y, rolling_index ,window_size):
@@ -8,8 +10,7 @@ def rolling_reg( X, y, rolling_index ,window_size):
 
     ## return: a dict which maps rolling_index to corresponding revalued regression models
 
-    import statsmodels.api as sm
-    import numpy as np
+
 
     res= {}
 
@@ -36,7 +37,7 @@ def rolling_forecast( X, rolling_model):
 
     ## rolling_model: dict mapping date to the rolling revalued model
 
-    import pandas as pd
+
 
     pred_list= []
     for key, val in rolling_model.items():
@@ -50,3 +51,21 @@ def rolling_forecast( X, rolling_model):
         res.loc[val[1].index]= val[1].tolist()
 
     return(res)
+
+
+def rolling_forecasting2(X, params ):
+    start_date= params.index[0]
+    tmpX= X.loc[ X.index>= start_date]
+    tmpZ= pd.DataFrame( [0]*tmpX.shape[0], columns=['to_be_deleted'] , index= tmpX.index )
+    params_expanded= pd.concat( [tmpZ, params], axis= 1  , join= 'outer')
+    del params_expanded['to_be_deleted']
+    params_expanded.fillna( method= 'ffill', inplace= True)
+
+    params_expanded= params_expanded[X.columns]
+
+    res= np.sum( tmpX.values * params_expanded.values, axis= 1)
+    res= pd.Series( res, index= params_expanded.index)
+    return ((res, params_expanded))
+
+
+
